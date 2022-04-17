@@ -1,12 +1,35 @@
+/**
+ * Each distinct product of a product family have a base interface. All variants
+ * of the product must implement this interface.
+ */
 interface AbstractProductA {
   usefulFunctionA(): string;
 }
 
+/**
+ * Here's the base interface of another product. All products can interact with
+ * each other, but proper interaction is possible only between products of the
+ * same concrete variant.
+ */
 interface AbstractProductB {
+  /**
+   * Product B is able to do its own thing ...
+   */
   usefulFunctionB(): string;
+
+  /**
+   * ... but it can also collaborate with the Product A.
+   * The Abstract Factory makes sure that all products it creates are of the same
+   * variant and thus, compatible.
+   *
+   * @param collaborator
+   */
   anotherUsefulFunctionB(collaborator: AbstractProductA): string;
 }
 
+/**
+ * These Concrete Products are created by corresponding Concrete Factories.
+ */
 class ConcreteProductA1 implements AbstractProductA {
   usefulFunctionA(): string {
     return 'The result of the product A1.';
@@ -19,6 +42,9 @@ class ConcreteProductA2 implements AbstractProductA {
   }
 }
 
+/**
+ * These Concrete Products are created by corresponding Concrete Factories.
+ */
 class ConcreteProductB1 implements AbstractProductB {
   usefulFunctionB(): string {
     return 'The result of the product B1.';
@@ -41,11 +67,24 @@ class ConcreteProductB2 implements AbstractProductB {
   }
 }
 
+/**
+ * The Abstract Factory interface declares a set of methods that return different
+ * abstract products. The products are called a family and are related by a high-level
+ * theme or concept. Products of one family are usually able to collaborate among
+ * themselves. A family of products may have several variants, but the products of
+ * one variant are incompatible with product of another.
+ */
 interface AbstractFactory {
   createProductA(): AbstractProductA;
   createProductB(): AbstractProductB;
 }
 
+/**
+ * Concrete Factories produce a family of products that belong to a single variant.
+ * The factory guarantees that resulting products are compatible. Note that signatures
+ * of the Concrete Factory's methods return an abstract product, while inside the method
+ * a concrete product is instantiated.
+ */
 class ConcreteFactory1 implements AbstractFactory {
   createProductA(): AbstractProductA {
     return new ConcreteProductA1();
@@ -55,6 +94,9 @@ class ConcreteFactory1 implements AbstractFactory {
   }
 }
 
+/**
+ * Each Concrete Factory has a corresponding product variant.
+ */
 class ConcreteFactory2 implements AbstractFactory {
   createProductA(): AbstractProductA {
     return new ConcreteProductA2();
@@ -64,6 +106,12 @@ class ConcreteFactory2 implements AbstractFactory {
   }
 }
 
+/**
+ * The client code works with factories and products only through abstract types:
+ * AbstractFactory and AbstractProduct. This lets you pass any factory or product
+ * subclass to the client code without breaking it.
+ * @param factory
+ */
 function clientCode(factory: AbstractFactory) {
   const productA = factory.createProductA();
   const productB = factory.createProductB();
@@ -73,5 +121,8 @@ function clientCode(factory: AbstractFactory) {
   console.log(productB.anotherUsefulFunctionB(productA));
 }
 
+/**
+ * The client code can work with any concrete factory class.
+ */
 clientCode(new ConcreteFactory1());
 clientCode(new ConcreteFactory2());
